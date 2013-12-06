@@ -9,59 +9,6 @@ using CommandLine;
 namespace SeparatedFileProcessor
 {
 
-    public class Schema
-    {
-        public const string Rule_Required = "Required";
-        public const string Rule_Int32 = "Int32";
-        public const string Rule_Long = "Int64";
-        public const string Rule_DateTime = "DateTime";
-
-        private List<string> _fields = new List<string>(); 
-
-        public Schema(string schema)
-        {
-            var strings = schema.Split(';');
-            int position = 0;
-            foreach (var s in strings)
-            {
-                var def = s.Split('=');
-                int pos = def.Length == 2 ? (int) s[0] : position;
-                position++;
-
-
-            }
-
-           
-
-        }
-
-        private Func<string, string> GetValidatory(string descriptor, string option)
-        {
-            switch (descriptor)
-            {
-                case Schema.Rule_Required:
-                    return ((s) => s.Trim().Length == 0 ? "Field is required" : string.Empty);
-                case Schema.Rule_Int32:
-                    int i;
-                    return ((s) => !Int32.TryParse(s, out i) ? "Field is not Int32" : string.Empty);
-                case Schema.Rule_Long:
-                    long l;
-                    return ((s) => !Int64.TryParse(s, out l) ? "Field is not Int64" : string.Empty);
-                case Schema.Rule_DateTime:
-                    DateTime d;
-                    return ((s) => !DateTime.TryParse(s, out d) ? "Field is not DateTime" : string.Empty);
-                default:
-                    throw new ArgumentException("Unknown descriptor: " + descriptor);
-            }
-        }
-
-        public string Validate(string[] fields)
-        {
-            
-        }
-
-    }
-
     public class CommandLineOptions : CommandOption
     {
         [Option('i', "inputFileName", Required = true, HelpText = "path to the input file")]
@@ -78,6 +25,14 @@ namespace SeparatedFileProcessor
 
         [Option('n', "count", Required = false, HelpText = "expected number of fields")]
         public int Count { get; set; }
+
+        [Option('k', "skip", Required = false, HelpText = "number of lines to skip")]
+        public int SkipCount { get; set; }
+
+        [Option('v', "verbose", Required = false, HelpText = "whether to output errors on console", DefaultValue = true)]
+        public bool IsVerbose { get; set; }
+
+
 
         [HelpOption('?', "help")]
         public string GetTheHelp()
